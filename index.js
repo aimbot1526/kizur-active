@@ -2,13 +2,22 @@
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Probot} app
  */
-module.exports = (app) => {
-  app.log.info("Yay, the app was loaded!");
 
-  app.on("issues.opened", async (context) => {
-    const issueComment = context.issue({
-      body: "Thanks for opening this issue!",
+module.exports = (app) => {
+    app.on('issues.opened', async (context) => {
+        const { issue } = context.payload;
+        await context.octokit.issues.createComment('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+            owner: 'aimbot1526',
+            repo: 'imdb-clone',
+            issue_number: issue.number,
+            body: 'Testing--- test-body'
+        });
+        await context.octokit.request('PUT /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+            owner: 'aimbot1526',
+            repo: 'imdb-clone',
+            issue_number: issue.number,
+            labels: ['bug', 'test-label']
+        });
     });
-    return context.octokit.issues.createComment(issueComment);
-  });
 };
+
